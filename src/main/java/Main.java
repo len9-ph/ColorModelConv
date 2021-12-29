@@ -1,4 +1,7 @@
+import colorSpaceConverter.Converter;
+import colorSpaceConverter.RGBtoCMYK;
 import colorSpaces.CMYKColorSpace;
+import image.Image;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,6 +16,12 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException {
         String path = "C:\\Users\\Леонид\\Desktop\\cat_full.jpg";
+        Image cat = new Image(path);
+
+        RGBtoCMYK converter = new RGBtoCMYK();
+        converter.directConversion(cat);
+
+        /*String path = "C:\\Users\\Леонид\\Desktop\\cat_full.jpg";
         BufferedImage img = ImageIO.read(new File(path));
         int height = img.getHeight();
         int width = img.getWidth();
@@ -30,9 +39,10 @@ public class Main {
             for (int x = 0; x < width; x++) {
                 pixel = img.getRGB(x, y);
                 //System.out.println(pixel);
-                R = 1 - (pixel >> 16) & 0xff;
-                G = 1 - (pixel >> 8) & 0xff;
-                B = 1 - (pixel) & 0xff;
+                R = (pixel >> 16) & 0xff;
+                G = (pixel >> 8) & 0xff;
+                B = (pixel) & 0xff;
+
 
                 Rc = (R / 255f);
                 Gc = (G / 255f);
@@ -45,12 +55,13 @@ public class Main {
                     C = (1 - Rc);
                     M = (1 - Gc);
                     Y = (1 - Bc);
+                    System.out.println("C= " + C);
                 }
                 cmykRaster.setDataElements(x, y, new byte[] {(byte)(C * 255), (byte) (M * 255), (byte) (Y * 255),
                         (byte) (K * 255)});
             }
         }
         File output = new File("image.jpg");
-        ImageIO.write(cmykImg, "jpg", output);
+        ImageIO.write(cmykImg, "jpg", output);*/
     }
 }

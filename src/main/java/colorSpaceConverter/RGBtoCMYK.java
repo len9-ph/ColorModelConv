@@ -1,48 +1,38 @@
 package colorSpaceConverter;
+import colorSpaces.CMYKColorSpace;
+import image.Image;
+
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
 import javax.imageio.ImageIO;
-import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 
 public class RGBtoCMYK implements Converter{
     @Override
-    public void directConversion(String pathToImage) {
-        File file = new File(pathToImage);
-        try {
-            BufferedImage image = ImageIO.read(file);
-            //Color color = new Color(image.getRGB())
+    public void directConversion(Image sourceImage) throws IOException {
+        CMYKColorSpace cmykColorSpace = new CMYKColorSpace();
+        ComponentColorModel cmykModel = new ComponentColorModel(CMYKColorSpace.INSTANCE, false,
+                false, Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
+        BufferedImage cmykImg = new BufferedImage(cmykModel, cmykModel.createCompatibleWritableRaster(sourceImage.getWidth(),
+                sourceImage.getHeight()), cmykModel.isAlphaPremultiplied(), null);
+        WritableRaster cmykRaster = cmykImg.getRaster();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        for(int y = 0; y < sourceImage.getHeight(); y++){
+            for(int x = 0; x < sourceImage.getWidth(); x++){
+                float[] pixel = cmykColorSpace.fromRGB(sourceImage.getPixel(y,x));
+
+                cmykRaster.setDataElements(x, y, new byte[] {(byte) (255 - pixel[0]), (byte) (255 - pixel[1]), (byte) (255 - pixel[2]),
+                        (byte) (255 - pixel[3])});
+            }
         }
+        File output = new File("image.jpg");
+        ImageIO.write(cmykImg, "jpg", output);
     }
 
     @Override
-    public void reverseConversion(String pathToImage) {
-        File imageFile = new File(pathToImage);
-        try {
-            BufferedImage image = ImageIO.read(imageFile);
-            if(image != null) {
-                int colorSpaceType = image.getColorModel().getColorSpace().getType();
-                if(colorSpaceType == ColorSpace.TYPE_CMYK)
-                {
-                    BufferedImage rgbImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-                    Raster raster = image.getRaster();
+    public void reverseConversion(Image sourceImage) {
 
-                    for(int i = 0; i < image.getHeight(); i++){
-                        for (int j = 0; j < image.getWidth(); j++){
-                            raster.getSample(i, j,0);
-                            Color color = new Color(ColorSpace.TYPE_CMYK, ColorSpace.TYPE_CMYK, ColorSpace.TYPE_CMYK);
-                        }
-                    }
-                }
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

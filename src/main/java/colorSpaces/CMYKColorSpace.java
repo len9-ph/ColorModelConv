@@ -9,7 +9,7 @@ public final class CMYKColorSpace extends ColorSpace {
 
     final ColorSpace sRGB = getInstance(CS_sRGB);
 
-    private CMYKColorSpace() {
+    public CMYKColorSpace() {
         super(ColorSpace.TYPE_CMYK, 4);
     }
 
@@ -28,12 +28,21 @@ public final class CMYKColorSpace extends ColorSpace {
 
     @Override
     public float[] fromRGB(float[] rgbvalue) {
-        float c = 1 - rgbvalue[0];
+        float c, m, y, k;
+        k = Math.min(255 - rgbvalue[0], Math.min(1 - rgbvalue[1], 1 - rgbvalue[2]));
+        if(k == 255) {
+            c = m = y = 0;
+        }else {
+            c = 255 - rgbvalue[0];
+            m = 255 - rgbvalue[1];
+            y = 255 - rgbvalue[2];
+        }
+        return new float[]{c, m, y, k};
+        /*float c = 1 - rgbvalue[0];
         float m = 1 - rgbvalue[1];
         float y = 1 - rgbvalue[2];
-
         float k = Math.min(c, Math.min(m,y));
-        return new float[]{(c - k), (m - k), (y - k), k};
+        return new float[]{(c - k), (m - k), (y - k), k};*/
     }
 
     @Override

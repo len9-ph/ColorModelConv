@@ -7,28 +7,50 @@ import java.io.IOException;
 
 public class Image {
     private BufferedImage bufferedImage;
-    private String pathToImage;
-    private int width;
-    private int height;
+    public Pixel[][] mapOfColors;
+    //private String pathToImage;
+    private final int width;
+    private final int height;
 
+    /**
+     * This constructor creates buffered image of given image and
+     * builds color map based on it
+     * @param path - path to image
+     */
     public Image(String path) {
-        this.pathToImage = path;
         try {
             bufferedImage = ImageIO.read(new File(path));
         } catch (IOException e){
             e.printStackTrace();
         }
+        this.width = bufferedImage.getWidth();
+        this.height = bufferedImage.getHeight();
+        mapOfColors = new Pixel[height][width];
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                int px = bufferedImage.getRGB(x, y);
+                Pixel pixel = new Pixel((px >> 16) & 0xff,(px >> 8) & 0xff, (px) & 0xff);
+                mapOfColors[y][x] = pixel;
+            }
+        }
     }
 
-    /**
-     * Create buffered image by given width and height, with color space int_argb, 4 bytes per pixel
-     * @param width
-     * @param height
-     */
-    public Image(int width, int height) {
+    public float[] getPixel(int x, int y){
+        return mapOfColors[x][y].getValues();
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    /* public Image(int width, int height) {
         this.width = width;
         this.height = height;
-        bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-    }
+        bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    }*/
 
 }
