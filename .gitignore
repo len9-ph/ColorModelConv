@@ -1,0 +1,13 @@
+# Project exclude paths
+CMYK/
+HSV/
+Lab/
+YCbCr/
+target/
+out/
+.idea/
+.idea_modules/
+*.iml
+*.ipr
+*.iws
+.jpg
